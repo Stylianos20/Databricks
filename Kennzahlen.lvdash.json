@@ -1,0 +1,2905 @@
+{
+  "datasets": [
+    {
+      "name": "d06331c5",
+      "displayName": "umsatz_bericht",
+      "queryLines": [
+        "SELECT * FROM unternehmen_projekt.gold.umsatz_bericht\r\n"
+      ],
+      "columns": [
+        {
+          "displayName": "Deckungsbeitrag",
+          "description": "",
+          "expression": "Brutto_Umsatz - Kosten\r\n"
+        }
+      ]
+    },
+    {
+      "name": "b87ed62c",
+      "displayName": "Produkt Kennzahlen",
+      "queryLines": [
+        ""
+      ],
+      "columns": [
+        {
+          "displayName": "Deckungsbeitrag",
+          "description": "",
+          "expression": "Umsatz - Kosten"
+        }
+      ]
+    },
+    {
+      "name": "eebdd9ec",
+      "displayName": "kunden_performance",
+      "queryLines": [
+        "SELECT * FROM unternehmen_projekt.gold.kunden_performance"
+      ]
+    },
+    {
+      "name": "766f7151",
+      "displayName": "Meldung_IOT",
+      "queryLines": [
+        "select \r\n",
+        "m.MELDUNG_ART as Meldungsart,\r\n",
+        "m.MELDUNG_NR as MeldungsNr,\r\n",
+        "m.MELDUNG_TXT as MeldungsText,\r\n",
+        "i.COST as Kosten,\r\n",
+        "i.SYS_ID as SYS_ID,\r\n",
+        "cast(year(i.TIMESTAMP) as string) as Jahr,\r\n",
+        "lpad(cast(month(i.TIMESTAMP) as string), 2, '0') as Monat,\r\n",
+        "i.timestamp as Datum\r\n",
+        "from unternehmen_projekt.bronze.dl_meldungen m\r\n",
+        "left join unternehmen_projekt.bronze.dl_iot i on m.MELDUNG_NR = i.MESSAGE_NR\r\n"
+      ]
+    },
+    {
+      "name": "2226a9be",
+      "displayName": "Produktion",
+      "queryLines": [
+        "select \r\n",
+        "sps.LINIE_NR as Linie,\r\n",
+        "sps.ANLAGE_NR as Anlage,\r\n",
+        "sps.SPS_NR as SPS,\r\n",
+        "iot.TIMESTAMP as Zeitpunkt,\r\n",
+        "cast(year(iot.TIMESTAMP) as string) as Jahr,\r\n",
+        "lpad(cast(month(iot.TIMESTAMP) as string), 2, '0') as Monat,iot.COST as Kosten,\r\n",
+        "iot.PRODUKTNUMMER as Produktnummer,\r\n",
+        "iot.ZAHLER as Zaehler\r\n",
+        "from unternehmen_projekt.bronze.dl_sps sps\r\n",
+        "left join unternehmen_projekt.bronze.dl_iot iot\r\n",
+        "on iot.SYS_ID = sps.SPS_NR"
+      ]
+    },
+    {
+      "name": "1009d554",
+      "displayName": "Industrial IoT Data from Bronze Layer",
+      "queryLines": [
+        "select \r\n",
+        "p.MATNR as ProduktNummer,\r\n",
+        "p.MAKTX as ProduktName,\r\n",
+        "p.MARKE as Marke,\r\n",
+        "p.MKST as MKST,\r\n",
+        "p.BRGEW as BruttoGewicht,\r\n",
+        "p.HKST as HKST,\r\n",
+        "i.TIMESTAMP as Zeitpunkt,\r\n",
+        "i.ZAHLER as Zaehler\r\n",
+        "\r\n",
+        "from unternehmen_projekt.silver.dwh_produkt_cleaned p \r\n",
+        "join unternehmen_projekt.bronze.dl_iot i on p.MATNR = i.PRODUKTNUMMER\r\n"
+      ]
+    },
+    {
+      "name": "540d2a79",
+      "displayName": "dl_iot",
+      "queryLines": [
+        ""
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "021a7785",
+      "displayName": "High Level Kennzahlen",
+      "layout": [
+        {
+          "widget": {
+            "name": "2b0d8a6e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "sum(Brutto_Umsatz)",
+                      "expression": "SUM(`Brutto_Umsatz`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Umsatz Ingesamt",
+                "showDescription": false,
+                "description": "",
+                "headerAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Brutto_Umsatz)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "EUR",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 0
+                    }
+                  },
+                  "style": {
+                    "color": {
+                      "themeColorType": "visualizationColors",
+                      "position": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "c0d252a4",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "sum(Kosten)",
+                      "expression": "SUM(`Kosten`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Herstellkosten & Markenkosten",
+                "showDescription": false,
+                "headerAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Kosten)",
+                  "style": {
+                    "color": {
+                      "themeColorType": "visualizationColors",
+                      "position": 4
+                    }
+                  },
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "EUR",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 0
+                    },
+                    "significantFigures": {
+                      "type": "all"
+                    },
+                    "negativeSign": "standard"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "27ded968",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size: 40px;font-family: Tahoma;line-height: 1.5;\">**Gesamtkennzahlen Electronica**</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "bb176f84",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size: 40px;line-height: 1.5;font-family: Tahoma;\">**Umsatz Entwicklung**</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "2052657d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "Datum",
+                      "expression": "`Datum`"
+                    },
+                    {
+                      "name": "sum(Brutto_Umsatz)",
+                      "expression": "SUM(`Brutto_Umsatz`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Umsatzentwicklung ",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Datum",
+                  "displayName": "Datum",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Brutto_Umsatz)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "EUR",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Umsatz",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "b23045f4",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size: 40px;line-height: 1.5;font-family: Tahoma;\">**Produktspezifische Kennzahlen**</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "25819424",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "Produktname",
+                      "expression": "`Produktname`"
+                    },
+                    {
+                      "name": "sum(Kosten)",
+                      "expression": "SUM(`Kosten`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Kosten pro Produkt"
+              },
+              "mark": {
+                "layout": "stack"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Produktname",
+                  "axis": {
+                    "hideLabels": true,
+                    "hideTitle": false
+                  },
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Kosten)",
+                  "axis": {
+                    "hideTitle": false
+                  },
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "EUR",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    }
+                  },
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Produktname",
+                  "legend": {
+                    "hideTitle": true,
+                    "hide": true
+                  },
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 18,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "93485bc8",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "Produktname",
+                      "expression": "`Produktname`"
+                    },
+                    {
+                      "name": "sum(Brutto_Umsatz)",
+                      "expression": "SUM(`Brutto_Umsatz`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Umsatz pro Produkt",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Produktname",
+                  "axis": {
+                    "hideTitle": false,
+                    "hideLabels": true
+                  },
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Brutto_Umsatz)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "EUR",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "all"
+                    },
+                    "significantFigures": {
+                      "type": "exact",
+                      "figures": 3
+                    }
+                  },
+                  "axis": {
+                    "hideTitle": false
+                  },
+                  "displayName": "Umsatz",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Produktname",
+                  "legend": {
+                    "hide": true
+                  },
+                  "displayName": "Product",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": false
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 18,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "f5257ad5",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "Marke",
+                      "expression": "`Marke`"
+                    },
+                    {
+                      "name": "sum(Brutto_Umsatz)",
+                      "expression": "SUM(`Brutto_Umsatz`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showDescription": false
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Marke",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "Apple",
+                        "Microsoft",
+                        "Dell",
+                        "Samsung",
+                        "Sony",
+                        "LG",
+                        "Nintendo",
+                        "Amazon"
+                      ]
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Brutto_Umsatz)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 27,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "absatz",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "sum(Verkaufsmenge)",
+                      "expression": "SUM(`Verkaufsmenge`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Absatz an Produkten",
+                "headerAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Verkaufsmenge)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "all"
+                    },
+                    "significantFigures": {
+                      "type": "all"
+                    },
+                    "negativeSign": "standard"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "638d2ab6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "daily(Datum)",
+                      "expression": "DATE_TRUNC(\"DAY\", `Datum`)"
+                    },
+                    {
+                      "name": "Kundenname",
+                      "expression": "`Kundenname`"
+                    },
+                    {
+                      "name": "Belegnummer",
+                      "expression": "`Belegnummer`"
+                    },
+                    {
+                      "name": "Position",
+                      "expression": "`Position`"
+                    },
+                    {
+                      "name": "Produktname",
+                      "expression": "`Produktname`"
+                    },
+                    {
+                      "name": "Verkaufsmenge",
+                      "expression": "`Verkaufsmenge`"
+                    },
+                    {
+                      "name": "sum(Brutto_Umsatz)",
+                      "expression": "SUM(`Brutto_Umsatz`)"
+                    },
+                    {
+                      "name": "sum(Kosten)",
+                      "expression": "SUM(`Kosten`)"
+                    },
+                    {
+                      "name": "sum(Deckungsbeitrag)",
+                      "expression": "SUM(`Deckungsbeitrag`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "daily(Datum)"
+                  },
+                  {
+                    "fieldName": "Kundenname"
+                  },
+                  {
+                    "fieldName": "Belegnummer"
+                  },
+                  {
+                    "fieldName": "Position"
+                  },
+                  {
+                    "fieldName": "Produktname"
+                  },
+                  {
+                    "fieldName": "Verkaufsmenge",
+                    "contentAlignment": "center",
+                    "format": {
+                      "type": "number-plain",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      },
+                      "significantFigures": {
+                        "type": "max",
+                        "figures": 1
+                      },
+                      "hideGroupSeparator": true
+                    },
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "sum(Brutto_Umsatz)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      },
+                      "significantFigures": {
+                        "type": "all"
+                      },
+                      "hideGroupSeparator": false
+                    },
+                    "contentAlignment": "center",
+                    "displayName": "Umsatz (Brutto)",
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "sum(Kosten)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      },
+                      "significantFigures": {
+                        "type": "all"
+                      },
+                      "hideGroupSeparator": false
+                    },
+                    "contentAlignment": "center",
+                    "displayName": "Kosten",
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "sum(Deckungsbeitrag)",
+                    "contentAlignment": "center",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      },
+                      "hideGroupSeparator": false,
+                      "negativeSign": "standard"
+                    },
+                    "displayName": "Deckungsbeitrag",
+                    "style": {
+                      "type": "basic",
+                      "rules": [
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "0"
+                            },
+                            "operator": "<="
+                          },
+                          "backgroundColor": {
+                            "themeColorType": "visualizationColors",
+                            "position": 4
+                          }
+                        },
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "0"
+                            },
+                            "operator": ">"
+                          },
+                          "backgroundColor": "#00A972"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 39,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c5e2d873",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "Produktname",
+                      "expression": "`Produktname`"
+                    },
+                    {
+                      "name": "sum(Brutto_Umsatz)",
+                      "expression": "SUM(`Brutto_Umsatz`)"
+                    },
+                    {
+                      "name": "sum(Kosten)",
+                      "expression": "SUM(`Kosten`)"
+                    },
+                    {
+                      "name": "sum(Deckungsbeitrag)",
+                      "expression": "SUM(`Deckungsbeitrag`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Produktname",
+                    "useForSearch": false
+                  },
+                  {
+                    "fieldName": "sum(Brutto_Umsatz)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      },
+                      "significantFigures": {
+                        "type": "all"
+                      },
+                      "hideGroupSeparator": false
+                    },
+                    "contentAlignment": "center",
+                    "displayName": "Umsatz (Brutto)",
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "sum(Kosten)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      },
+                      "significantFigures": {
+                        "type": "all"
+                      },
+                      "hideGroupSeparator": false
+                    },
+                    "contentAlignment": "center",
+                    "displayName": "Kosten",
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "sum(Deckungsbeitrag)",
+                    "contentAlignment": "center",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      },
+                      "hideGroupSeparator": false,
+                      "negativeSign": "standard"
+                    },
+                    "displayName": "Deckungsbeitrag",
+                    "style": {
+                      "type": "basic",
+                      "rules": [
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "0"
+                            },
+                            "operator": "<="
+                          },
+                          "backgroundColor": {
+                            "themeColorType": "visualizationColors",
+                            "position": 4
+                          }
+                        },
+                        {
+                          "condition": {
+                            "operand": {
+                              "type": "data-value",
+                              "value": "0"
+                            },
+                            "operator": ">"
+                          },
+                          "backgroundColor": "#00A972"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 33,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "qualitaetskosten",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "766f7151",
+                  "fields": [
+                    {
+                      "name": "sum(Kosten)",
+                      "expression": "SUM(`Kosten`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Qualitätskosten",
+                "headerAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Kosten)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "EUR",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 0
+                    },
+                    "significantFigures": {
+                      "type": "all"
+                    },
+                    "hideGroupSeparator": false
+                  },
+                  "style": {
+                    "color": {
+                      "themeColorType": "visualizationColors",
+                      "position": 4
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 5,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "14aa2cbf",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "sum(Deckungsbeitrag)",
+                      "expression": "SUM(`Deckungsbeitrag`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Deckungsbeitrag ohne Qualitäskosten",
+                "showDescription": false,
+                "headerAlignment": "center"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Deckungsbeitrag)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "EUR",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 0
+                    }
+                  },
+                  "style": {
+                    "color": {
+                      "themeColorType": "visualizationColors",
+                      "position": 3
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "0bba63b3",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "49a46c8c",
+            "queries": [
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f1261038d5116abc5de1c1a99c9e9a_Jahr",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "Jahr",
+                      "expression": "`Jahr`"
+                    },
+                    {
+                      "name": "Jahr_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126e9b0f01cd9afa1c020a292f69b_Jahr",
+                "query": {
+                  "datasetName": "766f7151",
+                  "fields": [
+                    {
+                      "name": "Jahr",
+                      "expression": "`Jahr`"
+                    },
+                    {
+                      "name": "Jahr_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126f1ddda16cb96d07e0377d2d0e9_Jahr",
+                "query": {
+                  "datasetName": "2226a9be",
+                  "fields": [
+                    {
+                      "name": "Jahr",
+                      "expression": "`Jahr`"
+                    },
+                    {
+                      "name": "Jahr_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f1261143e11dd695c96edc0aaca07c_Jahr",
+                "query": {
+                  "datasetName": "b87ed62c",
+                  "fields": [
+                    {
+                      "name": "Jahr",
+                      "expression": "`Jahr`"
+                    },
+                    {
+                      "name": "Jahr_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Jahr",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f1261038d5116abc5de1c1a99c9e9a_Jahr"
+                  },
+                  {
+                    "fieldName": "Jahr",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126e9b0f01cd9afa1c020a292f69b_Jahr"
+                  },
+                  {
+                    "fieldName": "Jahr",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126f1ddda16cb96d07e0377d2d0e9_Jahr"
+                  },
+                  {
+                    "fieldName": "Jahr",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f1261143e11dd695c96edc0aaca07c_Jahr"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "840af9d3",
+            "queries": [
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f1261038d5116abc5de1c1a99c9e9a_Monat",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "Monat",
+                      "expression": "`Monat`"
+                    },
+                    {
+                      "name": "Monat_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126e9b0f01cd9afa1c020a292f69b_Monat",
+                "query": {
+                  "datasetName": "766f7151",
+                  "fields": [
+                    {
+                      "name": "Monat",
+                      "expression": "`Monat`"
+                    },
+                    {
+                      "name": "Monat_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126f1ddda16cb96d07e0377d2d0e9_Monat",
+                "query": {
+                  "datasetName": "2226a9be",
+                  "fields": [
+                    {
+                      "name": "Monat",
+                      "expression": "`Monat`"
+                    },
+                    {
+                      "name": "Monat_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "disallowAll": false,
+              "scale": {
+                "type": "categorical",
+                "sort": {
+                  "by": "natural-order"
+                }
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Monat",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f1261038d5116abc5de1c1a99c9e9a_Monat"
+                  },
+                  {
+                    "fieldName": "Monat",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126e9b0f01cd9afa1c020a292f69b_Monat"
+                  },
+                  {
+                    "fieldName": "Monat",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126f1ddda16cb96d07e0377d2d0e9_Monat"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 1,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "produkt-auswahl",
+            "queries": [
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f1261038d5116abc5de1c1a99c9e9a_Produktname",
+                "query": {
+                  "datasetName": "d06331c5",
+                  "fields": [
+                    {
+                      "name": "Produktname",
+                      "expression": "`Produktname`"
+                    },
+                    {
+                      "name": "Produktname_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126dfdce01e9f84b7908f59d52c71_Beispiel_Produkt",
+                "query": {
+                  "datasetName": "eebdd9ec",
+                  "fields": [
+                    {
+                      "name": "Beispiel_Produkt",
+                      "expression": "`Beispiel_Produkt`"
+                    },
+                    {
+                      "name": "Beispiel_Produkt_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Produkt Auswahl Filter"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Produktname",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f1261038d5116abc5de1c1a99c9e9a_Produktname"
+                  },
+                  {
+                    "fieldName": "Beispiel_Produkt",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126dfdce01e9f84b7908f59d52c71_Beispiel_Produkt"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "6986cec2",
+      "displayName": "Kunden",
+      "layout": [
+        {
+          "widget": {
+            "name": "382c1579",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size:40px;line-height:1.5;font-family:Tahoma\">**Kundenspezifische Kennzahlen**</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kunden",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eebdd9ec",
+                  "fields": [
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Kunden"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(*)",
+                  "style": {
+                    "bold": true,
+                    "fontSize": 60
+                  },
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 2,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "24e5b3b3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eebdd9ec",
+                  "fields": [
+                    {
+                      "name": "Land",
+                      "expression": "`Land`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "frame": {
+                "title": "Umsatz nach Stadt",
+                "showTitle": true
+              },
+              "widgetType": "choropleth-map",
+              "encodings": {
+                "region": {
+                  "regionType": "mapbox-v4-admin",
+                  "admin0": {
+                    "fieldName": "Land",
+                    "type": "field",
+                    "geographicRole": "admin0-name"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 3,
+            "width": 3,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "973cc80b",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eebdd9ec",
+                  "fields": [
+                    {
+                      "name": "sum(Gesamt_Umsatz_Brutto)",
+                      "expression": "SUM(`Gesamt_Umsatz_Brutto`)"
+                    },
+                    {
+                      "name": "KundenName",
+                      "expression": "`KundenName`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top 10 Kunden nach Umsatz",
+                "showTitle": true,
+                "showDescription": false
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(Gesamt_Umsatz_Brutto)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    },
+                    "significantFigures": {
+                      "type": "all"
+                    }
+                  },
+                  "displayName": "Umsatz"
+                },
+                "color": {
+                  "fieldName": "KundenName",
+                  "legend": {
+                    "hide": false
+                  },
+                  "displayName": "Kunde",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "Media Markt",
+                        "Amazon",
+                        "Expert",
+                        "Saturn",
+                        "Redcoon",
+                        "Euronics",
+                        "Cyberport",
+                        "Apple Store",
+                        "Conrad",
+                        "Alternate",
+                        "Elektronikmarkt Huth",
+                        "Elektronikmarkt Salewski",
+                        "Elektronikmarkt Salzmann",
+                        "Elektronikmarkt Georg",
+                        "Elektronikmarkt Kappel",
+                        "Elektronikmarkt Schumann",
+                        "Elektronikmarkt Kremer",
+                        "Elektronikmarkt Schleicher",
+                        "Elektronikmarkt Theis",
+                        "Elektronikmarkt Kramer",
+                        "Elektronikmarkt Fricke",
+                        "Elektronikmarkt Breidenbach",
+                        "Elektronikmarkt Welker",
+                        "Elektronikmarkt Topp",
+                        "Elektronikmarkt Spiekermann",
+                        "Elektronikmarkt Holz",
+                        "Elektronikmarkt Moll",
+                        "Elektronikmarkt Wortmann",
+                        "Elektronikmarkt Ruck",
+                        "Elektronikmarkt Pietsch",
+                        "Elektronikmarkt Reisinger",
+                        "Elektronikmarkt Falk",
+                        "Elektronikmarkt Heinrichs",
+                        "Elektronikmarkt Flohr",
+                        "Elektronikmarkt Balke",
+                        "Elektronikmarkt Christiansen",
+                        "Elektronikmarkt Heidrich",
+                        "Elektronikmarkt Korn",
+                        "Elektronikmarkt Appel",
+                        "Elektronikmarkt Wacker",
+                        "Elektronikmarkt Nissen",
+                        "Elektronikmarkt Kusch",
+                        "Elektronikmarkt Mertens",
+                        "Elektronikmarkt Pape",
+                        "Elektronikmarkt Puschmann",
+                        "Elektronikmarkt Borchers",
+                        "Elektronikmarkt Bohr",
+                        "Elektronikmarkt Bischof",
+                        "Elektronikmarkt Scheidt",
+                        "Elektronikmarkt Gutsche",
+                        "Elektronikmarkt Schmieder",
+                        "Elektronikmarkt Neuhaus",
+                        "Elektronikmarkt Roloff",
+                        "Elektronikmarkt Steinkamp",
+                        "Elektronikmarkt Hagel"
+                      ]
+                    }
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 5,
+            "y": 3,
+            "width": 7,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "bfb37e36",
+            "queries": [
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126dfdce01e9f84b7908f59d52c71_Stadt",
+                "query": {
+                  "datasetName": "eebdd9ec",
+                  "fields": [
+                    {
+                      "name": "Stadt",
+                      "expression": "`Stadt`"
+                    },
+                    {
+                      "name": "Stadt_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Stadt",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126dfdce01e9f84b7908f59d52c71_Stadt"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "050f3f63",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "eebdd9ec",
+                  "fields": [
+                    {
+                      "name": "KundenName",
+                      "expression": "`KundenName`"
+                    },
+                    {
+                      "name": "KundenNummer",
+                      "expression": "`KundenNummer`"
+                    },
+                    {
+                      "name": "Stadt",
+                      "expression": "`Stadt`"
+                    },
+                    {
+                      "name": "Anzahl_Bestellungen",
+                      "expression": "`Anzahl_Bestellungen`"
+                    },
+                    {
+                      "name": "sum(Gesamt_Umsatz_Brutto)",
+                      "expression": "SUM(`Gesamt_Umsatz_Brutto`)"
+                    },
+                    {
+                      "name": "sum(Gesamt_Umsatz_Netto)",
+                      "expression": "SUM(`Gesamt_Umsatz_Netto`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Bestellungen pro Kunde",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "KundenName",
+                    "contentAlignment": "left",
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "KundenNummer",
+                    "contentAlignment": "center",
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "Stadt",
+                    "contentAlignment": "center",
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "Anzahl_Bestellungen",
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "sum(Gesamt_Umsatz_Brutto)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      },
+                      "significantFigures": {
+                        "type": "all"
+                      },
+                      "hideGroupSeparator": false
+                    },
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      },
+                      "foregroundColor": {
+                        "themeColorType": "visualizationColors",
+                        "position": 2
+                      }
+                    }
+                  },
+                  {
+                    "fieldName": "sum(Gesamt_Umsatz_Netto)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "none",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      },
+                      "hideGroupSeparator": false
+                    },
+                    "style": {
+                      "type": "basic",
+                      "backgroundColor": {
+                        "themeColorType": "canvasBackgroundColor"
+                      },
+                      "foregroundColor": {
+                        "themeColorType": "visualizationColors",
+                        "position": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "891e6d10",
+            "queries": [
+              {
+                "name": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126dfdce01e9f84b7908f59d52c71_Gesamt_Umsatz_Brutto",
+                "query": {
+                  "datasetName": "eebdd9ec",
+                  "fields": [
+                    {
+                      "name": "min(Gesamt_Umsatz_Brutto)",
+                      "expression": "MIN(`Gesamt_Umsatz_Brutto`)"
+                    },
+                    {
+                      "name": "max(Gesamt_Umsatz_Brutto)",
+                      "expression": "MAX(`Gesamt_Umsatz_Brutto`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true
+              },
+              "widgetType": "range-slider",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Gesamt_Umsatz_Brutto",
+                    "queryName": "dashboards/01f1260f6dea14b08090bfdb9f2628b4/datasets/01f126dfdce01e9f84b7908f59d52c71_Gesamt_Umsatz_Brutto"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 8,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "deb4c491",
+      "displayName": "Produktion",
+      "layout": [
+        {
+          "widget": {
+            "name": "89ca7155",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2226a9be",
+                  "fields": [
+                    {
+                      "name": "countdistinct(SPS)",
+                      "expression": "COUNT(DISTINCT `SPS`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Speicherprogrammierbare Steuerung"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(SPS)",
+                  "style": {
+                    "fontSize": 40
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "4cc7a6f8",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2226a9be",
+                  "fields": [
+                    {
+                      "name": "countdistinct(Linie)",
+                      "expression": "COUNT(DISTINCT `Linie`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Produktionslinien"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(Linie)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "all"
+                    },
+                    "significantFigures": {
+                      "type": "all"
+                    }
+                  },
+                  "style": {
+                    "fontSize": 40
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "eaa3cd5e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2226a9be",
+                  "fields": [
+                    {
+                      "name": "countdistinct(Anlage)",
+                      "expression": "COUNT(DISTINCT `Anlage`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Anlagen"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(Anlage)",
+                  "style": {
+                    "fontSize": 40
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "5e2a4db2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2226a9be",
+                  "fields": [
+                    {
+                      "name": "Anlage",
+                      "expression": "`Anlage`"
+                    },
+                    {
+                      "name": "sum(Kosten)",
+                      "expression": "SUM(`Kosten`)"
+                    },
+                    {
+                      "name": "Linie",
+                      "expression": "`Linie`"
+                    },
+                    {
+                      "name": "countdistinct(Anlage)",
+                      "expression": "COUNT(DISTINCT `Anlage`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Anlagen pro Produktionslinie",
+                "showTitle": true
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Linie",
+                  "axis": {
+                    "hideTitle": false,
+                    "hideLabels": false
+                  },
+                  "displayName": "Produktionslinie",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "L_1",
+                        "L_2",
+                        "L_3",
+                        "L_4",
+                        "L_5",
+                        "L_6",
+                        "L_7",
+                        "L_8",
+                        "L_9",
+                        "L_10",
+                        "L_11",
+                        "L_12",
+                        "L_13",
+                        "L_14",
+                        "L_15",
+                        "L_16",
+                        "L_17",
+                        "L_18"
+                      ]
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "countdistinct(Anlage)",
+                  "displayName": "Anzahl Anlagen",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "Anlage"
+                  },
+                  {
+                    "fieldName": "sum(Kosten)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "compact",
+                      "decimalPlaces": {
+                        "type": "max",
+                        "places": 2
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "da5a1232",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2226a9be",
+                  "fields": [
+                    {
+                      "name": "Linie",
+                      "expression": "`Linie`"
+                    },
+                    {
+                      "name": "countdistinct(Zaehler)",
+                      "expression": "COUNT(DISTINCT `Zaehler`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Linie",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "countdistinct(Zaehler)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Linie",
+                  "legend": {
+                    "hideTitle": true,
+                    "hide": true
+                  },
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "L_1",
+                        "L_2",
+                        "L_3",
+                        "L_4",
+                        "L_5",
+                        "L_6",
+                        "L_7",
+                        "L_8",
+                        "L_9",
+                        "L_10",
+                        "L_11",
+                        "L_12",
+                        "L_13",
+                        "L_14",
+                        "L_15",
+                        "L_16",
+                        "L_17",
+                        "L_18"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "544278ae",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "2226a9be",
+                  "fields": [
+                    {
+                      "name": "Anlage",
+                      "expression": "`Anlage`"
+                    },
+                    {
+                      "name": "countdistinct(Zaehler)",
+                      "expression": "COUNT(DISTINCT `Zaehler`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Anlage",
+                  "axis": {
+                    "hideTitle": false,
+                    "hideLabels": false
+                  },
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "A_1",
+                        "A_2",
+                        "A_3",
+                        "A_4",
+                        "A_5",
+                        "A_6",
+                        "A_7",
+                        "A_8",
+                        "A_9",
+                        "A_10",
+                        "A_11",
+                        "A_12",
+                        "A_13",
+                        "A_14",
+                        "A_15",
+                        "A_16",
+                        "A_17",
+                        "A_18",
+                        "A_19",
+                        "A_20",
+                        "A_21",
+                        "A_22",
+                        "A_23",
+                        "A_24",
+                        "A_25",
+                        "A_26",
+                        "A_27",
+                        "A_28",
+                        "A_29",
+                        "A_30",
+                        "A_31",
+                        "A_32",
+                        "A_33",
+                        "A_34",
+                        "A_35",
+                        "A_36",
+                        "A_37",
+                        "A_38",
+                        "A_39",
+                        "A_40",
+                        "A_41",
+                        "A_42",
+                        "A_43",
+                        "A_44",
+                        "A_45",
+                        "A_46",
+                        "A_47",
+                        "A_48",
+                        "A_49",
+                        "A_50"
+                      ]
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "countdistinct(Zaehler)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 12,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "fc4de2dc",
+      "displayName": "Meldungen",
+      "layout": [
+        {
+          "widget": {
+            "name": "a654270e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "766f7151",
+                  "fields": [
+                    {
+                      "name": "Meldungsart",
+                      "expression": "`Meldungsart`"
+                    },
+                    {
+                      "name": "sum(Kosten)",
+                      "expression": "SUM(`Kosten`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Meldungsart",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "I",
+                        "W",
+                        "E",
+                        "C"
+                      ]
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Kosten)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Meldungsart",
+                  "legend": {
+                    "hide": true
+                  },
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "C",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 4
+                        }
+                      },
+                      {
+                        "value": "E",
+                        "color": "#FF7E79"
+                      },
+                      {
+                        "value": "W",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 2
+                        }
+                      },
+                      {
+                        "value": "I",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 1
+                        }
+                      }
+                    ]
+                  }
+                },
+                "label": {
+                  "show": true,
+                  "text": {
+                    "fieldName": "sum(Kosten)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "compact",
+                      "decimalPlaces": {
+                        "type": "exact",
+                        "places": 2
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "qualitaetskosten",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "766f7151",
+                  "fields": [
+                    {
+                      "name": "sum(Kosten)",
+                      "expression": "SUM(`Kosten`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Qualitätskosten"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Kosten)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "EUR",
+                    "abbreviation": "compact",
+                    "decimalPlaces": {
+                      "type": "max",
+                      "places": 2
+                    }
+                  },
+                  "style": {
+                    "color": {
+                      "themeColorType": "fontColor"
+                    },
+                    "fontSize": 52
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "meldungen-1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "766f7151",
+                  "fields": [
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Meldungen"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "count(*)",
+                  "format": {
+                    "type": "number-plain",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "all"
+                    },
+                    "significantFigures": {
+                      "type": "all"
+                    },
+                    "negativeSign": "standard"
+                  },
+                  "style": {
+                    "color": {
+                      "themeColorType": "visualizationColors",
+                      "position": 4
+                    },
+                    "bold": true,
+                    "fontSize": 52
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "8fb4410e",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size: 48px;line-height: 1.5;\">**Meldunge</span><span style=\"font-size: 48px;line-height: 1.5;\">n Information**</span></span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "1bc3ad09",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "766f7151",
+                  "fields": [
+                    {
+                      "name": "MeldungsText",
+                      "expression": "`MeldungsText`"
+                    },
+                    {
+                      "name": "Meldungsart",
+                      "expression": "`Meldungsart`"
+                    },
+                    {
+                      "name": "MeldungsNr",
+                      "expression": "`MeldungsNr`"
+                    },
+                    {
+                      "name": "sum(Kosten)",
+                      "expression": "SUM(`Kosten`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "MeldungsNr",
+                  "axis": {
+                    "hideLabels": false,
+                    "hideGrid": false
+                  },
+                  "scale": {
+                    "type": "quantitative",
+                    "domain": {
+                      "min": 0
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(Kosten)",
+                  "axis": {
+                    "hideGrid": false,
+                    "hideLabels": false
+                  },
+                  "scale": {
+                    "type": "quantitative",
+                    "reverse": false
+                  }
+                },
+                "extra": [
+                  {
+                    "fieldName": "MeldungsText"
+                  },
+                  {
+                    "fieldName": "Meldungsart"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "ce058ba9",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "766f7151",
+                  "fields": [
+                    {
+                      "name": "Meldungsart",
+                      "expression": "`Meldungsart`"
+                    },
+                    {
+                      "name": "Jahr",
+                      "expression": "`Jahr`"
+                    },
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Meldungen pro Jahr",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Jahr",
+                  "displayName": "Monat",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "natural-order"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "count(*)",
+                  "displayName": "Anzahl Meldungen",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Meldungsart",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Meldungsart",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "C",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 4
+                        }
+                      },
+                      {
+                        "value": "I",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 1
+                        }
+                      },
+                      {
+                        "value": "W",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 2
+                        }
+                      },
+                      {
+                        "value": "E",
+                        "color": "#FC4172"
+                      }
+                    ]
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 23,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "194ab992",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "766f7151",
+                  "fields": [
+                    {
+                      "name": "Meldungsart",
+                      "expression": "`Meldungsart`"
+                    },
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`Jahr` IN (`Jahr`) OR TRUE"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Anzahl Meldungen pro Meldungsart",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Meldungsart",
+                  "displayName": "SYS_ID",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "I",
+                        "W",
+                        "E",
+                        "C"
+                      ]
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "count(*)",
+                  "displayName": "Anzahl Meldungen",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Meldungsart",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Meldungsart",
+                  "scale": {
+                    "type": "categorical",
+                    "mappings": [
+                      {
+                        "value": "C",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 4
+                        }
+                      },
+                      {
+                        "value": "E",
+                        "color": "#FF6666"
+                      },
+                      {
+                        "value": "W",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 2
+                        }
+                      },
+                      {
+                        "value": "I",
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 1
+                        }
+                      }
+                    ]
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 12,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
