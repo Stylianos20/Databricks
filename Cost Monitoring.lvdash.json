@@ -1,0 +1,330 @@
+{
+  "datasets": [
+    {
+      "name": "4b4d8aaf",
+      "displayName": "Cost Usage",
+      "queryLines": [
+        "select * from system.billing.usage;"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "516d9d62",
+      "displayName": "Usage Cost",
+      "layout": [
+        {
+          "widget": {
+            "name": "kosten-pro-produkt",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b4d8aaf",
+                  "fields": [
+                    {
+                      "name": "billing_origin_product",
+                      "expression": "`billing_origin_product`"
+                    },
+                    {
+                      "name": "sum(usage_quantity)",
+                      "expression": "SUM(`usage_quantity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Kosten pro Produkt"
+              },
+              "mark": {
+                "layout": "stack"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "billing_origin_product",
+                  "axis": {
+                    "hideLabels": true
+                  },
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(usage_quantity)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "billing_origin_product",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true,
+                  "text": {
+                    "fieldName": "sum(usage_quantity)",
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "EUR",
+                      "abbreviation": "compact",
+                      "decimalPlaces": {
+                        "type": "max",
+                        "places": 2
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 12,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "5b9c09c9",
+            "queries": [
+              {
+                "name": "dashboards/01f1260c83a710bbbb9d5153b65ec47d/datasets/01f1260c927e1c6da468313244cf3fd6_daily(usage_start_time)",
+                "query": {
+                  "datasetName": "4b4d8aaf",
+                  "fields": [
+                    {
+                      "name": "daily(usage_start_time)",
+                      "expression": "DATE_TRUNC(\"DAY\", `usage_start_time`)"
+                    },
+                    {
+                      "name": "daily(usage_start_time)_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showDescription": false,
+                "showTitle": true,
+                "title": "Start date"
+              },
+              "selection": {
+                "defaultSelection": {
+                  "range": {
+                    "dataType": "DATETIME",
+                    "min": {
+                      "value": "now/M"
+                    },
+                    "max": {
+                      "value": "now/M"
+                    }
+                  }
+                }
+              },
+              "widgetType": "filter-date-range-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "daily(usage_start_time)",
+                    "displayName": "DAILY(usage_start_time)",
+                    "queryName": "dashboards/01f1260c83a710bbbb9d5153b65ec47d/datasets/01f1260c927e1c6da468313244cf3fd6_daily(usage_start_time)"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "567bd7a2",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b4d8aaf",
+                  "fields": [
+                    {
+                      "name": "cloud",
+                      "expression": "`cloud`"
+                    },
+                    {
+                      "name": "sum(usage_quantity)",
+                      "expression": "SUM(`usage_quantity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Anwendungen pro Cloud Provider",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "cloud",
+                  "displayName": "Cloud Provider",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(usage_quantity)",
+                  "format": {
+                    "type": "number-plain",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 0
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Total Usage (DBUs)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "cloud",
+                  "displayName": "Cloud Provider",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "a1c8d839",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4b4d8aaf",
+                  "fields": [
+                    {
+                      "name": "billing_origin_product",
+                      "expression": "`billing_origin_product`"
+                    },
+                    {
+                      "name": "daily(usage_date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `usage_date`)"
+                    },
+                    {
+                      "name": "sum(usage_quantity)",
+                      "expression": "SUM(`usage_quantity`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Daily Usage by Billing Product",
+                "showTitle": true
+              },
+              "mark": {
+                "layout": "stack"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(usage_date)",
+                  "displayName": "Usage Date",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(usage_quantity)",
+                  "format": {
+                    "type": "number-plain",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 2
+                    },
+                    "abbreviation": "compact"
+                  },
+                  "displayName": "Total Usage (DBUs)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "billing_origin_product",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Billing Product",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 1,
+            "width": 12,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "f9227a7a",
+      "displayName": "Global Filters",
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
