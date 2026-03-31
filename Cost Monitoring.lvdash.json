@@ -158,7 +158,7 @@
         },
         {
           "widget": {
-            "name": "567bd7a2",
+            "name": "accounts",
             "queries": [
               {
                 "name": "main_query",
@@ -166,12 +166,8 @@
                   "datasetName": "4b4d8aaf",
                   "fields": [
                     {
-                      "name": "cloud",
-                      "expression": "`cloud`"
-                    },
-                    {
-                      "name": "sum(usage_quantity)",
-                      "expression": "SUM(`usage_quantity`)"
+                      "name": "countdistinct(account_id)",
+                      "expression": "COUNT(DISTINCT `account_id`)"
                     }
                   ],
                   "disaggregated": false
@@ -179,47 +175,15 @@
               }
             ],
             "spec": {
-              "version": 3,
+              "version": 2,
               "frame": {
-                "title": "Anwendungen pro Cloud Provider",
+                "title": "Accounts",
                 "showTitle": true
               },
-              "widgetType": "bar",
+              "widgetType": "counter",
               "encodings": {
-                "x": {
-                  "fieldName": "cloud",
-                  "displayName": "Cloud Provider",
-                  "scale": {
-                    "type": "categorical",
-                    "sort": {
-                      "by": "y-reversed"
-                    }
-                  }
-                },
-                "y": {
-                  "fieldName": "sum(usage_quantity)",
-                  "format": {
-                    "type": "number-plain",
-                    "decimalPlaces": {
-                      "type": "exact",
-                      "places": 0
-                    },
-                    "abbreviation": "compact"
-                  },
-                  "displayName": "Total Usage (DBUs)",
-                  "scale": {
-                    "type": "quantitative"
-                  }
-                },
-                "color": {
-                  "fieldName": "cloud",
-                  "displayName": "Cloud Provider",
-                  "scale": {
-                    "type": "categorical"
-                  }
-                },
-                "label": {
-                  "show": true
+                "value": {
+                  "fieldName": "countdistinct(account_id)"
                 }
               }
             }
@@ -227,8 +191,8 @@
           "position": {
             "x": 0,
             "y": 15,
-            "width": 12,
-            "height": 6
+            "width": 1,
+            "height": 2
           }
         },
         {
